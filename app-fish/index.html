@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="Description" content="Put your description here.">
+  <base href="/">
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" as="style" type="text/css" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css?family=Material+Icons&display=block" as="style" type="text/css" crossorigin>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Material+Icons&display=block" rel="stylesheet">
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Roboto, sans-serif;
+      background-color: #ededed;
+    }
+  </style>
+  <title>app-fish</title>
+</head>
+
+<body>
+    <mwc-drawer type="modal">
+        <!-- <span slot="title">Drawer Title</span> -->
+        <!-- <span slot="subtitle">subtitle</span> -->
+        <div class="drawer-content">
+          <h3>Tackle summary for general Vermont fishing</h3>
+          <ul>
+            <li>6.5 - 7' spinning rod, medium weight, medium action</li>
+            <li>Braided Spectra line, green, 30lb test. This will never break and will last years.</li>
+            <li>Fluorocarbon line for leaders, 12 or 15lb test. This will break off frequently but a spool should last years. Use the Alberto knot to attach leaders to braided backer. Practice practice practice so you can do it fast.</li>
+          </ul>
+
+          <h3>Worm fishing for lunkers</h3>
+          <ul>
+            <li>7' - 7.5' spinning or bait-cast rod, medium weight, fast action, carbon preferred</li>
+            <li>5/0 offset worm hooks, Gamekatsu or Lazer Sharp or similar; no crappy old-fashioned hooks</li>
+            <li>6" senko worms. 5" works too and comes in more colors.</li>
+            <li>2-4 colors is sufficient; a couple of lights and a couple of darks. I like black, watermelon, baby bass, and pumpkinseed. I get metallic flake when available.</li>
+            <li>O rings and wacky-tool for wacky-rig</li>
+            <li>Let fall to bottom, then jerk and reel and let fall again. Most bites come on the first or second fall. After 3 falls reel in and cast again.</li>
+          </ul>
+
+          <h3>Notes on Pike and Pickerel</h3>
+          <ul>
+            <li>Toothy fish notorious for bad behaviors including:</li>
+            <li>Striking the lure right at the boat</li>
+            <li>Biting off lures</li>
+            <li>Biting hands</li>
+            <li>Getting boats all gross and slimy</li>
+            <li>Unhook fish in water if possible; this minimizes damage to the fish as well</li>
+            <li>A steel leader is practically mandatory when targeting these bad boys, or sometimes even when targeting other species where they are present.</li>
+          </ul>
+
+          <h3>Notes on upland brook trout</h3>
+          <ul>
+            <li>Many upland streams in vermont support naturally reproducing native brook trout.</li>
+            <li>These trout rarely get large and very small 1/32oz Panther Martin spinners are the best lures for them.</li>
+            <li>Small worms are also popular.</li>
+            <li>I prefer a shorter rod, about 4' to avoid snagging overhead branches when casting</li>
+            <li>My favorite rod is the 4' Children's Ugly Stick, hot pink, that I got for my daughter. It's pretty stiff which is useful for flipping spinners up under rocks and logs without snagging overhead branches by casting. It has a spincast reel which allows for one-handed casts.</li>
+            <li>4lb fluorocarbon line is preferred. A braided backer is acceptable, but not necessary.
+            <li>Brookies are present in riffles, but the risk of snagging lures there is high. They are easier to target in pools. Presentation matters. Cast upstream of the pool and use a fast retrieve to get the spinner going even in the current and let it go over the fall.</li>
+            <li>If you get no hits and no followers after a few casts to one spot, cast elsewhere.</li>
+            <li>If you get followers, keep casting! Often they will hit after a few casts. If they stop following and after a few more casts do not hit, move on.</li>
+            <li>When you get a hit jerk the rod up to set the hook and reel quickly. Keep the rod up and keep tension on the line.</li>
+            <li>Start downstream and work your way up; this improves lure presentation and helps you sneak up behind the fish as they typically face upstream looking for incoming food.</li>
+            <li>Be quiet and keep low when when approaching pools.</li>
+            <li>Areas can be re-worked after 20 or 30 minutes. Brookies have short-term memories.</li>
+            <li>Forceps are suggested for removing hooks. A leatherman tool is useful for straightening and sharpening hooks, which are quickly dulled and bent by rocks. Brookies have relatively tough mouths and sharp hooks are required for positive hook-sets. If you keep losing fish, check your hooks.</li>
+            <li>If catch & release is your plan, bend down the barbs on the hooks for easier removal, and land fish with a rubber-coated net.</li>
+            <li>If you plan to keep the fish, either net it, or get it up on land as quickly as possible, kick it if necessary, step on it, and hit it with something to kill it. Do this quickly or it will flip back in the water. A net isn't really necessary for catch & keep brook trout fishing although it may help your catch-rate. They are very flippy fish and true escape artists. They will spit hooks and flip back in the water before you can blink.</li>
+            <li>The males are particularly beautiful in their fall mating colors.</li>
+            <li>Warm late summer and early fall afternoons are the best time, when it's still warm enough to wade in shorts.</li>
+          </ul>
+        </div>
+        <div slot="appContent">
+            <mwc-top-app-bar>
+                <mwc-icon-button slot="navigationIcon" icon="menu"></mwc-icon-button>
+                <div slot="title">Fish of Vermont</div>
+            </mwc-top-app-bar>
+            <app-fish class=main-content></app-fish>
+        </div>
+    </mwc-drawer>
+
+  <script type="module">
+    import '@material/mwc-drawer/mwc-drawer.js';
+    import '@material/mwc-top-app-bar/mwc-top-app-bar.js';
+    import '@material/mwc-icon-button/mwc-icon-button.js';
+
+    var drawer = document.getElementsByTagName('mwc-drawer')[0];
+    var container = drawer.parentNode;
+    container.addEventListener('MDCTopAppBar:nav', function(e) {
+      drawer.open = !drawer.open;
+    });
+  </script>
+
+  <script type="module" src="./src/app-fish.js"></script>
+
+  <!-- Amazon mobile pop-under -->
+  <script type="text/javascript">
+    amzn_assoc_ad_type = "link_enhancement_widget";
+    amzn_assoc_tracking_id = "fish056-20";
+    amzn_assoc_linkid = "fbfdc1ad71a384d4de2c8b8b43083cca";
+    amzn_assoc_placement = "";
+    amzn_assoc_marketplace = "amazon";
+    amzn_assoc_region = "US";
+  </script>
+  <script src="//ws-na.amazon-adsystem.com/widgets/q?ServiceVersion=20070822&Operation=GetScript&ID=OneJS&WS=1&MarketPlace=US"></script>
+
+</body>
+
+</html>
