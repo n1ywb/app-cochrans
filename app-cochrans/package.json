@@ -11,8 +11,8 @@
     "storybook": "start-storybook",
     "storybook:build": "build-storybook",
     "build": "rimraf dist && rollup -c rollup.config.js",
-    "start:build": "npm run build && es-dev-server --root-dir dist --app-index index.html --open --compatibility none",
-    "start": "es-dev-server --app-index index.html --node-resolve --open --watch"
+    "start:build": "npm run build && es-dev-server --root-dir dist --app-index index.html --open --compatibility none --hostname 0.0.0.0",
+    "start": "es-dev-server --app-index index.html --node-resolve --open --watch --hostname 0.0.0.0 --http2"
   },
   "devDependencies": {
     "@open-wc/building-rollup": "^1.0.0",
@@ -59,9 +59,12 @@
   "author": "app-cochrans",
   "license": "MIT",
   "dependencies": {
+    "@material/mwc-button": "^0.19.1",
     "@material/mwc-drawer": "^0.17.2",
+    "@material/mwc-icon": "^0.19.1",
     "@material/mwc-icon-button": "^0.17.2",
     "@material/mwc-list": "^0.17.2",
+    "@material/mwc-textfield": "^0.19.1",
     "@material/mwc-top-app-bar": "^0.17.2",
     "iron-swipeable-pages": "https://github.com/myfrom/iron-swipeable-pages",
     "lit-element": "^2.0.1",

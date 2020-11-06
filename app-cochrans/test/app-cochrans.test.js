@@ -2,7 +2,7 @@ import { html, fixture, expect } from '@open-wc/testing';
 
 import '../src/app-cochrans.js';
 
-describe('AppFish', () => {
+describe('AppCochrans', () => {
   let element;
   beforeEach(async () => {
     element = await fixture(html`

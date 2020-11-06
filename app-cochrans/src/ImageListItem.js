@@ -79,10 +79,10 @@ export class ImageListItem extends LitElement {
             this.expandoContainer.style.zIndex = 9998;
             this.expandoContainer.style.transition = 'top 0.5s, left 0.5s, height 0.5s, width 0.5s'
             window.requestAnimationFrame(()=>{
-                this.expandoContainer.style.top = this.expando_rect.top + 'px';
-                this.expandoContainer.style.left = this.expando_rect.left + 'px';
-                this.expandoContainer.style.height = this.expando_rect.height + 'px';
-                this.expandoContainer.style.width = this.expando_rect.width + 'px';
+                this.expandoContainer.style.top = `${this.expando_rect.top  }px`;
+                this.expandoContainer.style.left = `${this.expando_rect.left  }px`;
+                this.expandoContainer.style.height = `${this.expando_rect.height  }px`;
+                this.expandoContainer.style.width = `${this.expando_rect.width  }px`;
             })
          }
     }
@@ -100,10 +100,10 @@ export class ImageListItem extends LitElement {
                 document.querySelector('body').style.height = '100%';
                 document.querySelector('body').style.overflow = 'hidden';
                 this.expandoContainer.style.position = 'fixed'
-                this.expandoContainer.style.top = this.expando_rect.top + 'px';
-                this.expandoContainer.style.left = this.expando_rect.left + 'px';
-                this.expandoContainer.style.height = this.expando_rect.height + 'px';
-                this.expandoContainer.style.width = this.expando_rect.width + 'px';
+                this.expandoContainer.style.top = `${this.expando_rect.top  }px`;
+                this.expandoContainer.style.left = `${this.expando_rect.left  }px`;
+                this.expandoContainer.style.height = `${this.expando_rect.height  }px`;
+                this.expandoContainer.style.width = `${this.expando_rect.width  }px`;
                 this.expandoContainer.style.zIndex = 9999;
                 window.requestAnimationFrame(()=>{
                     this.expandoContainer.style.transition = 'top 0.5s, left 0.5s, height 0.5s, width 0.5s'
@@ -138,7 +138,7 @@ export class ImageListItem extends LitElement {
             :host {
                 display: flex;
                 box-sizing: border-box;
-                // border-radius: 0 0 8px 8px;
+                /* border-radius: 0 0 8px 8px; */
                 margin: 2px;
                 justify-content: right;
                 background: white;
@@ -221,8 +221,6 @@ export class ImageListItem extends LitElement {
             .image-container {
                 display: flex;
                 flex-direction: column;
-                // flex-grow: 1;
-                // flex-basis: 25%;
                 width: 100%;
                 height: 256px;
                 position: relative;

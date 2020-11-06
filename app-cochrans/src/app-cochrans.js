@@ -1,3 +1,3 @@
-import { AppFish } from './AppFish.js';
+import { AppCochrans } from './AppCochrans.js';
 
-customElements.define('app-cochrans', AppFish);
+customElements.define('app-cochrans', AppCochrans);
