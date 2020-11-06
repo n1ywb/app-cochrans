@@ -1,12 +1,12 @@
 import { html, fixture, expect } from '@open-wc/testing';
 
-import '../src/app-fish.js';
+import '../src/app-cochrans.js';
 
 describe('AppFish', () => {
   let element;
   beforeEach(async () => {
     element = await fixture(html`
-      <app-fish></app-fish>
+      <app-cochrans></app-cochrans>
     `);
   });
 

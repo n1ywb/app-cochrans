@@ -1,11 +1,11 @@
 import { html } from 'lit-html';
-import '../src/app-fish.js';
+import '../src/app-cochrans.js';
 
 export default {
-  title: 'app-fish',
+  title: 'app-cochrans',
 };
 
 export const App = () =>
   html`
-    <app-fish></app-fish>
+    <app-cochrans></app-cochrans>
   `;

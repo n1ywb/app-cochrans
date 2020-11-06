@@ -53,10 +53,10 @@
       "git add"
     ]
   },
-  "name": "app-fish",
+  "name": "app-cochrans",
   "version": "0.0.0",
-  "description": "Webcomponent app-fish following open-wc recommendations",
-  "author": "app-fish",
+  "description": "Webcomponent app-cochrans following open-wc recommendations",
+  "author": "app-cochrans",
   "license": "MIT",
   "dependencies": {
     "@material/mwc-drawer": "^0.17.2",
