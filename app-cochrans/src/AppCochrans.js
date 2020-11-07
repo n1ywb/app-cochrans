@@ -5,9 +5,21 @@ import { openWcLogo } from './open-wc-logo.js';
 // import '@material/mwc-list/mwc-list-item.js';
 import '@material/mwc-textfield';
 import '@material/mwc-button';
+import { parse } from './vcard';
 
 export class AppCochrans extends LitElement {
+ 
+
   firstUpdated() {
+    this.fn = this.shadowRoot.querySelector('[name="fn"]');
+    this.adr_street = this.shadowRoot.querySelector('[name="adr_street"]')
+    this.adr_locality = this.shadowRoot.querySelector('[name="adr_locality"]')
+    this.adr_region = this.shadowRoot.querySelector('[name="adr_region"]')
+    this.adr_code = this.shadowRoot.querySelector('[name="adr_code"]')
+    this.adr_country = this.shadowRoot.querySelector('[name="adr_country"]')
+    this.tel = this.shadowRoot.querySelector('[name="tel"]')
+    this.email = this.shadowRoot.querySelector('[name="email"]')
+ 
     if (!('NDEFReader' in window)) {
       /* Scan NFC tags */ 
       window.alert("Browser does not support reading NFC tags")
@@ -29,6 +41,16 @@ export class AppCochrans extends LitElement {
         const string = new TextDecoder("utf-8").decode(info)
         console.log("contact: ", string)
         this.contact = string;
+        let vcard = parse(string)
+        console.log("vcard: ", vcard)
+        this.fn.value = vcard.fn[0].value
+        this.adr_street.value = vcard.adr[0].value[2]
+        this.adr_locality.value = vcard.adr[0].value[3]
+        this.adr_region.value = vcard.adr[0].value[4]
+        this.adr_code.value = vcard.adr[0].value[5]
+        this.adr_country.value = vcard.adr[0].value[6]
+        this.tel.value = vcard.tel[0].value
+        this.email.value = vcard.email[0].value
       };
     }).catch(error => {
       console.log(`Error! Scan failed to start: ${error}.`);
@@ -53,12 +75,12 @@ export class AppCochrans extends LitElement {
       )
     const obj = Object.fromEntries(entries)
     const vcard = `BEGIN:VCARD
-    VERSION:4.0
-    FN:${obj.fn}
-    TEL:VALUE=uri:tel:${obj.tel}
-    ADR:;;${obj.adr_street};${obj.adr_locality};${obj.adr_region};${obj.adr_code};${obj.adr_country}
-    EMAIL:${obj.email}
-    END:VCARD`;
+VERSION:4.0
+FN:${obj.fn}
+TEL:VALUE=uri:tel:${obj.tel}
+ADR:;;${obj.adr_street};${obj.adr_locality};${obj.adr_region};${obj.adr_code};${obj.adr_country}
+EMAIL:${obj.email}
+END:VCARD`.replace('\n', '\r\n');
     const encoder = new TextEncoder();
     const writer = new NDEFWriter();
     writer.write({records: [
@@ -176,8 +198,13 @@ export class AppCochrans extends LitElement {
 
       <mwc-button 
         icon="create"
-        label="Write to tag"
-        type="submit"
+        label="Edit Fields"
+        @click="${this.onEditFields}"
+      ></mwc-button>
+
+      <mwc-button 
+        icon="create"
+        label="Save to Tag"
         @click="${this.onSubmitClicked}"
       ></mwc-button>
     </form>
