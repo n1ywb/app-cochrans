@@ -22,39 +22,44 @@ export class AppCochrans extends LitElement {
  
     if (!('NDEFReader' in window)) {
       /* Scan NFC tags */ 
-      window.alert("Browser does not support reading NFC tags")
+      // window.alert("Browser does not support reading NFC tags")
+      console.warn("Browser does not support reading NFC tags")
     }
-    if (!('NDEFWriter' in window)) {
-      /* Write NFC tags */
-      window.alert("Browser does not support writing NFC tags")
+    else {
+      const reader = new NDEFReader();
+      reader.scan().then(() => {
+        console.log("Scan started successfully.");
+        reader.onerror = () => {
+          console.log("Cannot read data from the NFC tag. Try another one?");
+        };
+        reader.onreading = event => {
+          console.log("NDEF message read.", event);
+          const info = event.message.records[0].data.buffer
+          const string = new TextDecoder("utf-8").decode(info)
+          console.log("contact: ", string)
+          this.contact = string;
+          const vcard = parse(string)
+          console.log("vcard: ", vcard)
+          this.fn.value = vcard.fn[0].value
+          this.adr_street.value = vcard.adr[0].value[2]
+          this.adr_locality.value = vcard.adr[0].value[3]
+          this.adr_region.value = vcard.adr[0].value[4]
+          this.adr_code.value = vcard.adr[0].value[5]
+          this.adr_country.value = vcard.adr[0].value[6]
+          this.tel.value = vcard.tel[0].value
+          this.email.value = vcard.email[0].value
+        };
+      }).catch(error => {
+        console.log(`Error! Scan failed to start: ${error}.`);
+      });
     }
 
-    const reader = new NDEFReader();
-    reader.scan().then(() => {
-      console.log("Scan started successfully.");
-      reader.onerror = () => {
-        console.log("Cannot read data from the NFC tag. Try another one?");
-      };
-      reader.onreading = event => {
-        console.log("NDEF message read.", event);
-        const info = event.message.records[0].data.buffer
-        const string = new TextDecoder("utf-8").decode(info)
-        console.log("contact: ", string)
-        this.contact = string;
-        let vcard = parse(string)
-        console.log("vcard: ", vcard)
-        this.fn.value = vcard.fn[0].value
-        this.adr_street.value = vcard.adr[0].value[2]
-        this.adr_locality.value = vcard.adr[0].value[3]
-        this.adr_region.value = vcard.adr[0].value[4]
-        this.adr_code.value = vcard.adr[0].value[5]
-        this.adr_country.value = vcard.adr[0].value[6]
-        this.tel.value = vcard.tel[0].value
-        this.email.value = vcard.email[0].value
-      };
-    }).catch(error => {
-      console.log(`Error! Scan failed to start: ${error}.`);
-    });
+    if (!('NDEFWriter' in window)) {
+      /* Write NFC tags */
+      console.warn("Browser does not support writing NFC tags")
+    }
+
+
   }
 
   onSubmitClicked(event) {
