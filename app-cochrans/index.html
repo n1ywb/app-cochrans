@@ -42,7 +42,6 @@
     </mwc-drawer>
 
     <div id=firebaseui-auth-container style='position: absolute; width: 100vw; height: 100vh; top: 0; left: 0; background: white; z-index: 99999;'>
-    <!-- <div id=firebaseui-auth-container> -->
       <h2 style="text-align: center;">Cochran's App</h2>
       <h3 style="text-align: center;">You must sign in to continue</h3>
     </div>
@@ -60,6 +59,12 @@
   <script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-firestore.js"></script>
 
   <script type="module">
+    import '@material/mwc-ripple/mwc-ripple.js';
+    const _define = window.customElements.define.bind(window.customElements)
+    window.customElements.define = ((tagName, klass) => {
+      if (tagName == 'mwc-ripple') { return }
+      return _define(tagName, klass)
+    }).bind(window.customElements)
     import '@material/mwc-drawer/mwc-drawer.js';
     import '@material/mwc-top-app-bar/mwc-top-app-bar.js';
     import '@material/mwc-icon-button/mwc-icon-button.js';
@@ -94,9 +99,6 @@
           // User successfully signed in.
           // Return type determines whether we continue the redirect automatically
           // or whether we leave that to developer to handle.
-          const app = document.querySelector('app-cochrans');
-          app.authResult = authResult;
-          document.querySelector('#firebaseui-auth-container').style.display = 'none'
           return false;
         },
         uiShown: function() {
@@ -118,6 +120,18 @@
         // firebase.auth.GithubAuthProvider.PROVIDER_ID,
         firebase.auth.PhoneAuthProvider.PROVIDER_ID
       ]
+    });
+
+    window.firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        // User is signed in.
+          document.querySelector('#firebaseui-auth-container').style.display = 'none'
+          document.querySelector('app-cochrans').user = user;
+      } else {
+        // No user is signed in.
+          document.querySelector('#firebaseui-auth-container').style.display = 'flex'
+          document.querySelector('app-cochrans').user = null;
+      }
     });
 
     // // This can also be done via:

@@ -1,25 +1,49 @@
 import { LitElement, html, css } from 'lit-element';
 import { openWcLogo } from './open-wc-logo.js';
 
-// import '@material/mwc-list/mwc-list.js';
-// import '@material/mwc-list/mwc-list-item.js';
 import '@material/mwc-textfield';
 import '@material/mwc-button';
 import { parse } from './vcard';
+import './c-contact-form'
+import '@material/mwc-list/mwc-list.js';
+import '@material/mwc-list/mwc-list-item.js';
 
 export class AppCochrans extends LitElement {
- 
+
+  static get properties() {
+    return {
+      title: { type: String },
+      page: { type: String },
+      contact: { type: String },
+      user: { type: Object },
+      path: { type: String },
+    };
+  }
+
+  navigate(state, path) {
+    this.state = state;
+    this.path = path;
+    history.pushState(state, '', path);
+  }
 
   firstUpdated() {
-    this.fn = this.shadowRoot.querySelector('[name="fn"]');
-    this.adr_street = this.shadowRoot.querySelector('[name="adr_street"]')
-    this.adr_locality = this.shadowRoot.querySelector('[name="adr_locality"]')
-    this.adr_region = this.shadowRoot.querySelector('[name="adr_region"]')
-    this.adr_code = this.shadowRoot.querySelector('[name="adr_code"]')
-    this.adr_country = this.shadowRoot.querySelector('[name="adr_country"]')
-    this.tel = this.shadowRoot.querySelector('[name="tel"]')
-    this.email = this.shadowRoot.querySelector('[name="email"]')
- 
+    // this.route(window.location);
+
+    window.addEventListener('popstate', event => {
+      this.path = document.location.pathname;
+      this.state = event.state;
+    })
+
+    this.path = document.location.pathname;
+
+    window.firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        // User is signed in.
+      } else {
+        // No user is signed in.
+      }
+    });
+
     if (!('NDEFReader' in window)) {
       /* Scan NFC tags */ 
       // window.alert("Browser does not support reading NFC tags")
@@ -62,19 +86,7 @@ export class AppCochrans extends LitElement {
 
   }
 
-  onSubmitClicked(event) {
-    event.target.closest('form').requestSubmit()
-  }
-
   onSubmit (event) {
-    event.preventDefault();
-    const form = event.target;
-    const fields = [...form.children]
-      .filter(child=>child.getAttribute('name'));
-    const validity = fields.map(field=>field.reportValidity()).filter(value=>!value)
-    if (validity.length) {
-      window.alert("Invalid entries, please fix")
-    }
     const entries = fields.map(child=>
         [child.getAttribute('name'), child.value]
       )
@@ -93,14 +105,6 @@ END:VCARD`.replace('\n', '\r\n');
     ]})
       .then(()=>window.alert("Write successful"))
       .catch(err=>window.alert(`Write failed: ${err}`))
-  }
-
-  static get properties() {
-    return {
-      title: { type: String },
-      page: { type: String },
-      contact: { type: String },
-    };
   }
 
   static get styles() {
@@ -138,87 +142,92 @@ END:VCARD`.replace('\n', '\r\n');
       }
 
       form {
-        display: flex;
-        flex-direction: column;
+      }
+
+      mwc-button {
+        padding: 8px;
       }
     `;
   }
 
+  route (path) {
+    if (path == '/') {
+      return html`
+      <p>Welcome, ${this.user?.displayName}</p>
+      <p>Would you like to:</p>
+
+      <mwc-button 
+        raised
+        label="Visit Today" 
+        @click="${()=>this.navigate(null, '/visit')}"
+      ></mwc-button>
+
+      <mwc-button 
+        raised
+        label="Manage Contacts" 
+        @click="${()=>this.navigate(null, '/contacts')}"
+      ></mwc-button>
+
+      <hr>
+      <section>Admin</section>
+
+      <mwc-button 
+        raised
+        label="Check Someone else in" 
+        @click="${()=>this.navigate(null, '/admin/checkin')}"
+      ></mwc-button>
+
+      <mwc-button 
+        raised
+        label="Manage Accounts" 
+        @click="${()=>this.navigate(null, '/admin/accounts')}"
+      ></mwc-button>
+
+      <mwc-icon
+        style="--mdc-icon-size: 64px;"
+      >contactless</mwc-icon>
+      Touch phone to NFC tag to read contact info
+    `
+    }
+    else if (path == '/contacts') {
+      return html`
+      <h2>contact</h2>
+      <mwc-list>
+        <mwc-list-item>
+          Jeff Laughlin
+        </mwc-list-item>
+      </mwc-list>
+      <c-contact-form
+        .fn="${'asdf'}"
+      ></c-contact-form>
+      `
+    }
+    else {
+      return html`
+        <h1>404 Page Not Found</h1>
+
+        <mwc-button 
+          raised
+          label="Go Home" 
+          @click="${()=>this.navigate(null, '/')}"
+        ></mwc-button>
+
+        <mwc-button 
+          raised
+          label="Go Back" 
+          @click="${()=>history.back()}"
+        ></mwc-button>
+      `
+    }
+  }
+
+
   render() {
     return html`
-    <h3>Contact info</h3>
-
-    <form
-      @submit=${this.onSubmit}
-    >
-      <mwc-textfield
-        required
-        label="Full Name"
-        name="fn"
-      ></mwc-textfield>
-
-      <mwc-textfield
-        required
-        label="Address"
-        name=adr_street
-      ></mwc-textfield>
-
-      <mwc-textfield
-        required
-        label="City"
-        name=adr_locality
-      ></mwc-textfield>
-
-      <mwc-textfield
-        required
-        label="State"
-        name=adr_region
-      ></mwc-textfield>
-
-      <mwc-textfield
-        required
-        label="Postal Code"
-        name=adr_code
-      ></mwc-textfield>
-
-      <mwc-textfield
-        required
-        label="Country"
-        name=adr_country
-      ></mwc-textfield>
-
-      <mwc-textfield
-        required
-        label="Phone"
-        type="tel"
-        name="tel"
-      ></mwc-textfield>
-
-      <mwc-textfield
-        required
-        label="Email"
-        type="email"
-        name="email"
-      ></mwc-textfield>
-
-      <mwc-button 
-        icon="create"
-        label="Edit Fields"
-        @click="${this.onEditFields}"
-      ></mwc-button>
-
-      <mwc-button 
-        icon="create"
-        label="Save to Tag"
-        @click="${this.onSubmitClicked}"
-      ></mwc-button>
-    </form>
-
-    <pre>${this.contact}</pre>
-
-        <p class="app-footer">
-          &copy;2020 Jeff Laughlin
-        </p>
+      ${ this.route(this.path) }
+      <p class="app-footer">
+        &copy;2020 Jeff Laughlin
+      </p>
     `;
   }
 }
