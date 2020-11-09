@@ -6,6 +6,7 @@ import '@material/mwc-button';
 import { parse } from './vcard';
 import '@material/mwc-list/mwc-list.js';
 import '@material/mwc-list/mwc-list-item.js';
+import dialogPolyfill from 'dialog-polyfill'
 
 import './c-contact-form';
 import './c-contacts';
@@ -30,6 +31,8 @@ export class AppCochrans extends LitElement {
 
   firstUpdated() {
     // this.route(window.location);
+
+    dialogPolyfill.registerDialog(this.shadowRoot.querySelector('dialog'));
 
     window.addEventListener('popstate', event => {
       this.path = document.location.pathname;
@@ -148,6 +151,11 @@ END:VCARD`.replace('\n', '\r\n');
 
       mwc-button {
         padding: 8px;
+      }
+
+      dialog {
+        max-height: 80vh;
+        overflow: auto;
       }
     `;
   }

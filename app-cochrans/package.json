@@ -69,6 +69,7 @@
     "@material/mwc-list": "^0.19.1",
     "@material/mwc-textfield": "0.20.0-canary.184861ee.0",
     "@material/mwc-top-app-bar": "^0.19.1",
+    "dialog-polyfill": "^0.5.3",
     "iron-swipeable-pages": "https://github.com/myfrom/iron-swipeable-pages",
     "lit-element": "^2.0.1",
     "lit-html": "^1.0.0"

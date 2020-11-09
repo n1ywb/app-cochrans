@@ -4,6 +4,7 @@ import '@material/mwc-fab/mwc-fab.js';
 import '@material/mwc-icon/mwc-icon.js';
 import '@material/mwc-list/mwc-list.js';
 import '@material/mwc-list/mwc-list-item.js';
+import dialogPolyfill from 'dialog-polyfill'
 
 export class CContacts extends LitElement {
   static get properties() {
@@ -23,12 +24,17 @@ export class CContacts extends LitElement {
     ]
 
     this.contactFormDialog = this.shadowRoot.querySelector('#contactFormDialog')
+    dialogPolyfill.registerDialog(this.contactFormDialog)
   }
 
   static styles = css`
     :host {
       display: flex;
       flex-direction: column;
+    }
+
+    dialog {
+      max-height: 90vh;
     }
   `;
 
