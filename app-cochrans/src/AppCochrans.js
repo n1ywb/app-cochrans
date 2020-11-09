@@ -4,9 +4,11 @@ import { openWcLogo } from './open-wc-logo.js';
 import '@material/mwc-textfield';
 import '@material/mwc-button';
 import { parse } from './vcard';
-import './c-contact-form'
 import '@material/mwc-list/mwc-list.js';
 import '@material/mwc-list/mwc-list-item.js';
+
+import './c-contact-form';
+import './c-contacts';
 
 export class AppCochrans extends LitElement {
 
@@ -174,7 +176,7 @@ END:VCARD`.replace('\n', '\r\n');
       <mwc-button 
         raised
         label="Check Someone else in" 
-        @click="${()=>this.navigate(null, '/admin/checkin')}"
+        @click="${()=>this.shadowRoot.querySelector('#checkinDialog').showModal()}"
       ></mwc-button>
 
       <mwc-button 
@@ -191,15 +193,8 @@ END:VCARD`.replace('\n', '\r\n');
     }
     else if (path == '/contacts') {
       return html`
-      <h2>contact</h2>
-      <mwc-list>
-        <mwc-list-item>
-          Jeff Laughlin
-        </mwc-list-item>
-      </mwc-list>
-      <c-contact-form
-        .fn="${'asdf'}"
-      ></c-contact-form>
+      <h2>My Contacts</h2>
+      <c-contacts></c-contacts>
       `
     }
     else {
@@ -225,6 +220,29 @@ END:VCARD`.replace('\n', '\r\n');
   render() {
     return html`
       ${ this.route(this.path) }
+
+      <dialog id=checkinDialog>
+        <c-contact-form></c-contact-form>
+        <ul>
+          <li>In the past 14 days I have not had close contact with a person confirmed to have COVID-19.</li>
+          <li>I am in compliance with the state’s travel and quarantine policies.</li>
+          <li>Today, or in the past 24 hours I have not had any of the following symptoms:</li>
+          <ul>
+            <li>Fever (>100.4°F or greater) or chills</li>
+            <li>Cough</li>
+            <li>Shortness of breath or difficulty breathing</li>
+            <li>Fatigue</li>
+            <li>Muscle or body aches</li>
+            <li>Headache</li>
+            <li>New loss of Taste or Smell</li>
+            <li>Sore throat</li>
+            <li>Congestion or runny nose</li>
+            <li>Nausea or vomiting</li>
+            <li>Diarrhea</li>
+          </ul>
+        </ul>
+      </dialog>
+
       <p class="app-footer">
         &copy;2020 Jeff Laughlin
       </p>

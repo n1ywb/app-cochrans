@@ -1156,6 +1156,16 @@
     tslib "^1.10.0"
     wicg-inert "^3.0.0"
 
+"@material/mwc-fab@0.20.0-canary.184861ee.0":
+  version "0.20.0-canary.184861ee.0"
+  resolved "https://registry.yarnpkg.com/@material/mwc-fab/-/mwc-fab-0.20.0-canary.184861ee.0.tgz#f8cae5ffb9143350b57d085713940b5cdb5986e0"
+  integrity sha512-fOSsQn+gw/a6kkFvO+nLBFTa2TXsFbDF6ND3DYkio8qWIEjGTt82fWcw8yINU+ZROeTz2GEMqy3U/esADZaDfw==
+  dependencies:
+    "@material/mwc-ripple" "0.20.0-canary.184861ee.0"
+    lit-element "^2.3.0"
+    lit-html "^1.1.2"
+    tslib "^1.10.0"
+
 "@material/mwc-floating-label@0.20.0-canary.184861ee.0":
   version "0.20.0-canary.184861ee.0"
   resolved "https://registry.yarnpkg.com/@material/mwc-floating-label/-/mwc-floating-label-0.20.0-canary.184861ee.0.tgz#874caa3e365d54b87b0581ea9a829ec8edc8973b"

@@ -2,6 +2,23 @@
 <html lang="en">
 
 <head>
+  <script>
+    (()=>{
+      const _define = window.customElements.define.bind(window.customElements)
+      let rippleDefined = false;
+      window.customElements.define = ((tagName, klass) => {
+        if (tagName == 'mwc-ripple') { 
+          if (rippleDefined) {
+            return 
+          }
+          else {
+            rippleDefined = true;
+          }
+        }
+        return _define(tagName, klass)
+      }).bind(window.customElements)
+    })()
+  </script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="Description" content="Put your description here.">
@@ -58,13 +75,10 @@
   <script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-firestore.js"></script>
 
+  foobar
+
   <script type="module">
     import '@material/mwc-ripple/mwc-ripple.js';
-    const _define = window.customElements.define.bind(window.customElements)
-    window.customElements.define = ((tagName, klass) => {
-      if (tagName == 'mwc-ripple') { return }
-      return _define(tagName, klass)
-    }).bind(window.customElements)
     import '@material/mwc-drawer/mwc-drawer.js';
     import '@material/mwc-top-app-bar/mwc-top-app-bar.js';
     import '@material/mwc-icon-button/mwc-icon-button.js';
