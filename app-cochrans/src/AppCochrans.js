@@ -6,6 +6,7 @@ import '@material/mwc-button';
 import { parse } from './vcard';
 import '@material/mwc-list/mwc-list.js';
 import '@material/mwc-list/mwc-list-item.js';
+import '@material/mwc-list/mwc-check-list-item.js';
 import dialogPolyfill from 'dialog-polyfill'
 
 import './c-contact-form';
@@ -20,6 +21,7 @@ export class AppCochrans extends LitElement {
       contact: { type: String },
       user: { type: Object },
       path: { type: String },
+      contacts: { type: Array },
     };
   }
 
@@ -31,6 +33,20 @@ export class AppCochrans extends LitElement {
 
   firstUpdated() {
     // this.route(window.location);
+    this.transientContacts = []
+    this.contacts = [
+      {fn: 'Jeff Laughlin'},
+      {fn: 'James Laughlin'},
+      {fn: 'Sofia Laughlin'},
+      {fn: 'Joseph Laughlin'},
+      {fn: 'Ania Laughlin'},
+    ]
+
+    this.accounts = [
+      {fn: 'Jeff Laughlin'},
+      {fn: 'Robert Farrell'},
+      {fn: 'Roger Brown'},
+    ]
 
     dialogPolyfill.registerDialog(this.shadowRoot.querySelector('dialog'));
 
@@ -87,8 +103,6 @@ export class AppCochrans extends LitElement {
       /* Write NFC tags */
       console.warn("Browser does not support writing NFC tags")
     }
-
-
   }
 
   onSubmit (event) {
@@ -115,16 +129,14 @@ END:VCARD`.replace('\n', '\r\n');
   static get styles() {
     return css`
       :host {
-        min-height: 100vh;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        font-size: calc(10px + 2vmin);
         color: #1a2b42;
         max-width: 960px;
         margin: 0 auto;
-        text-align: center;
+        text-align: left;
       }
 
       .app-footer {
@@ -184,13 +196,19 @@ END:VCARD`.replace('\n', '\r\n');
       <mwc-button 
         raised
         label="Check Someone else in" 
-        @click="${()=>this.shadowRoot.querySelector('#checkinDialog').showModal()}"
+        @click="${()=>this.navigate({}, '/admin/checkin')}"
       ></mwc-button>
 
       <mwc-button 
         raised
         label="Manage Accounts" 
         @click="${()=>this.navigate(null, '/admin/accounts')}"
+      ></mwc-button>
+
+      <mwc-button 
+        raised
+        label="Write NFC Tag" 
+        @click="${()=>this.navigate(null, '/admin/writetag')}"
       ></mwc-button>
 
       <mwc-icon
@@ -202,8 +220,105 @@ END:VCARD`.replace('\n', '\r\n');
     else if (path == '/contacts') {
       return html`
       <h2>My Contacts</h2>
-      <c-contacts></c-contacts>
+      <c-contacts
+        .contacts=${this.contacts}
+      ></c-contacts>
       `
+    }
+    else if (path == '/visit') {
+      return html`
+        Who is with you today, ${(new Date()).toDateString()}?
+        <mwc-list multi>
+          ${this.contacts.map(contact => html`
+            <mwc-check-list-item>${contact.fn}</mwc-check-list-item>
+          `)}
+        </mwc-list>
+        <mwc-button 
+          icon=add 
+          label="Add somebody else"
+          @click="${()=>this.shadowRoot.querySelector('dialog#newContact').showModal()}"
+        ></mwc-button>
+        Each member of your party must attest that the following statements are true as read by them:
+        <div style='text-align: left;'>
+          ${this.attest_text()}
+        </div>
+        <mwc-button 
+          raised 
+          type=submit 
+          @click="${()=>this.shadowRoot.querySelector('#attestThanks').showModal()}"
+        >Attest</mwc-button>
+        <dialog id=attestThanks>
+          <form method=dialog>
+            <p>Thanks for submitting your attestation!</p>
+            <mwc-button type=submit @click=${()=>this.navigate({}, '/')}>Go Home</mwc-button>
+          </form>
+        </dialog>
+        <dialog id=newContact>
+          <form method=dialog>
+            <c-contact-form></c-contact-form>
+            <mwc-button 
+              type=submit 
+              @click=${(e)=>e.target.closest('form').requestSubmit()}
+            >Save</mwc-button>
+            <mwc-button 
+              type=cancel
+              @click=${(e)=>e.target.closest('form').requestSubmit()}
+            >Cancel</mwc-button>
+          </form>
+        </dialog>
+      `;
+    }
+    else if (path == '/admin/checkin') {
+      return html`
+        Who is with you today, ${(new Date()).toDateString()}?
+        <mwc-list multi>
+          ${this.transientContacts.map(contact => html`
+            <mwc-check-list-item>${contact.fn}</mwc-check-list-item>
+          `)}
+        </mwc-list>
+        <mwc-button 
+          icon=add 
+          label="Add somebody else"
+          @click="${()=>this.shadowRoot.querySelector('dialog#newContact').showModal()}"
+        ></mwc-button>
+        Each member of your party must attest that the following statements are true as read by them:
+        <div style='text-align: left;'>
+          ${this.attest_text()}
+        </div>
+        <mwc-button 
+          raised 
+          type=submit 
+          @click="${()=>this.shadowRoot.querySelector('#attestThanks').showModal()}"
+        >Attest</mwc-button>
+        <dialog id=attestThanks>
+          <form method=dialog>
+            <p>Thanks for submitting your attestation!</p>
+            <mwc-button type=submit @click=${()=>this.navigate({}, '/')}>Go Home</mwc-button>
+          </form>
+        </dialog>
+        <dialog id=newContact>
+          <form method=dialog>
+            <c-contact-form></c-contact-form>
+            <mwc-button 
+              type=submit 
+              @click=${(e)=>e.target.closest('form').requestSubmit()}
+            >Save</mwc-button>
+            <mwc-button 
+              type=cancel
+              @click=${(e)=>e.target.closest('form').requestSubmit()}
+            >Cancel</mwc-button>
+          </form>
+        </dialog>
+      `;
+    }
+    else if (path == '/admin/accounts') {
+      return html`
+        <mwc-list>
+          ${ this.accounts.map(account=>html`
+            <mwc-list-item>${account.fn}</mwc-list-item>
+          `)}
+        </mwc-list>
+      `;
     }
     else {
       return html`
@@ -224,6 +339,29 @@ END:VCARD`.replace('\n', '\r\n');
     }
   }
 
+  attest_text() {
+    return html`
+      <ul>
+        <li>In the past 14 days I have not had close contact with a person confirmed to have COVID-19.</li>
+        <li>I am in compliance with the state’s travel and quarantine policies.</li>
+        <li>Today, or in the past 24 hours I have not had any of the following symptoms:</li>
+        <ul>
+          <li>Fever (>100.4°F or greater) or chills</li>
+          <li>Cough</li>
+          <li>Shortness of breath or difficulty breathing</li>
+          <li>Fatigue</li>
+          <li>Muscle or body aches</li>
+          <li>Headache</li>
+          <li>New loss of Taste or Smell</li>
+          <li>Sore throat</li>
+          <li>Congestion or runny nose</li>
+          <li>Nausea or vomiting</li>
+          <li>Diarrhea</li>
+        </ul>
+        <li>I understand that failure to provide accurate information may result in loss of skiing and riding privileges.</li>
+      </ul>
+    `
+  }
 
   render() {
     return html`
@@ -231,25 +369,8 @@ END:VCARD`.replace('\n', '\r\n');
 
       <dialog id=checkinDialog>
         <c-contact-form></c-contact-form>
-        <ul>
-          <li>In the past 14 days I have not had close contact with a person confirmed to have COVID-19.</li>
-          <li>I am in compliance with the state’s travel and quarantine policies.</li>
-          <li>Today, or in the past 24 hours I have not had any of the following symptoms:</li>
-          <ul>
-            <li>Fever (>100.4°F or greater) or chills</li>
-            <li>Cough</li>
-            <li>Shortness of breath or difficulty breathing</li>
-            <li>Fatigue</li>
-            <li>Muscle or body aches</li>
-            <li>Headache</li>
-            <li>New loss of Taste or Smell</li>
-            <li>Sore throat</li>
-            <li>Congestion or runny nose</li>
-            <li>Nausea or vomiting</li>
-            <li>Diarrhea</li>
-          </ul>
-        </ul>
-      </dialog>
+        ${this.attest_text()}
+     </dialog>
 
       <p class="app-footer">
         &copy;2020 Jeff Laughlin

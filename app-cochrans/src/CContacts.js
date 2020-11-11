@@ -15,14 +15,6 @@ export class CContacts extends LitElement {
   }
 
   firstUpdated() {
-    this.contacts = [
-      {fn: 'Jeff Laughlin'},
-      {fn: 'James Laughlin'},
-      {fn: 'Sofia Laughlin'},
-      {fn: 'Joseph Laughlin'},
-      {fn: 'Ania Laughlin'},
-    ]
-
     this.contactFormDialog = this.shadowRoot.querySelector('#contactFormDialog')
     dialogPolyfill.registerDialog(this.contactFormDialog)
   }
