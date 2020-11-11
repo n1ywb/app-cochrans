@@ -111,21 +111,7 @@ export class CContactForm extends LitElement {
           type="email"
           name="email"
         ></mwc-textfield>
-
-        <mwc-button 
-          icon="create"
-          label="Edit Fields"
-          @click="${this.onEditFields}"
-        ></mwc-button>
-
-        <mwc-button 
-          icon="create"
-          label="Save to Tag"
-          @click="${this.onSubmitClicked}"
-        ></mwc-button>
       </form>
-
-      <pre>${this.contact}</pre>
     `;
   }
 }
