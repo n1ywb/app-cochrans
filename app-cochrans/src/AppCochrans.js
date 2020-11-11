@@ -46,9 +46,9 @@ export class AppCochrans extends LitElement {
       {fn: 'Jeff Laughlin'},
       {fn: 'Robert Farrell'},
       {fn: 'Roger Brown'},
-    ]
+    ];
 
-    dialogPolyfill.registerDialog(this.shadowRoot.querySelector('dialog'));
+    [...this.shadowRoot.querySelectorAll('dialog')].map(dialog=>dialogPolyfill.registerDialog(dialog));
 
     window.addEventListener('popstate', event => {
       this.path = document.location.pathname;
@@ -247,25 +247,6 @@ END:VCARD`.replace('\n', '\r\n');
           type=submit 
           @click="${()=>this.shadowRoot.querySelector('#attestThanks').showModal()}"
         >Attest</mwc-button>
-        <dialog id=attestThanks>
-          <form method=dialog>
-            <p>Thanks for submitting your attestation!</p>
-            <mwc-button type=submit @click=${()=>this.navigate({}, '/')}>Go Home</mwc-button>
-          </form>
-        </dialog>
-        <dialog id=newContact>
-          <form method=dialog>
-            <c-contact-form></c-contact-form>
-            <mwc-button 
-              type=submit 
-              @click=${(e)=>e.target.closest('form').requestSubmit()}
-            >Save</mwc-button>
-            <mwc-button 
-              type=cancel
-              @click=${(e)=>e.target.closest('form').requestSubmit()}
-            >Cancel</mwc-button>
-          </form>
-        </dialog>
       `;
     }
     else if (path == '/admin/checkin') {
@@ -290,25 +271,6 @@ END:VCARD`.replace('\n', '\r\n');
           type=submit 
           @click="${()=>this.shadowRoot.querySelector('#attestThanks').showModal()}"
         >Attest</mwc-button>
-        <dialog id=attestThanks>
-          <form method=dialog>
-            <p>Thanks for submitting your attestation!</p>
-            <mwc-button type=submit @click=${()=>this.navigate({}, '/')}>Go Home</mwc-button>
-          </form>
-        </dialog>
-        <dialog id=newContact>
-          <form method=dialog>
-            <c-contact-form></c-contact-form>
-            <mwc-button 
-              type=submit 
-              @click=${(e)=>e.target.closest('form').requestSubmit()}
-            >Save</mwc-button>
-            <mwc-button 
-              type=cancel
-              @click=${(e)=>e.target.closest('form').requestSubmit()}
-            >Cancel</mwc-button>
-          </form>
-        </dialog>
       `;
     }
     else if (path == '/admin/accounts') {
@@ -370,7 +332,28 @@ END:VCARD`.replace('\n', '\r\n');
       <dialog id=checkinDialog>
         <c-contact-form></c-contact-form>
         ${this.attest_text()}
-     </dialog>
+      </dialog>
+
+      <dialog id=attestThanks>
+        <form method=dialog>
+          <p>Thanks for submitting your attestation!</p>
+          <mwc-button type=submit @click=${()=>this.navigate({}, '/')}>Go Home</mwc-button>
+        </form>
+      </dialog>
+
+      <dialog id=newContact>
+        <form method=dialog>
+          <c-contact-form></c-contact-form>
+          <mwc-button 
+            type=submit 
+            @click=${(e)=>e.target.closest('form').requestSubmit()}
+          >Save</mwc-button>
+          <mwc-button 
+            type=cancel
+            @click=${(e)=>e.target.closest('form').requestSubmit()}
+          >Cancel</mwc-button>
+        </form>
+      </dialog>
 
       <p class="app-footer">
         &copy;2020 Jeff Laughlin
