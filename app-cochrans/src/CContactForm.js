@@ -5,19 +5,6 @@ import '@material/mwc-button';
 import '@material/mwc-dialog/mwc-dialog.js';
 
 export class CContactForm extends LitElement {
-  static get properties() {
-    return {
-      fullname: { type: String },
-      address_street: { type: String },
-      address_locality: { type: String },
-      address_region: { type: String },
-      address_code: { type: String },
-      address_country: { type: String },
-      telephone: { type: String },
-      email: { type: String },
-    };
-  }
-
   firstUpdated() {
     this.form = this.shadowRoot.querySelector('mwc-dialog');
     this.fn = this.shadowRoot.querySelector('[name="fn"]');
@@ -47,13 +34,20 @@ export class CContactForm extends LitElement {
   }
 
   onSubmit() {
-    if (!this.isValid()) {
-      // window.alert("Invalid entries, please fix")
-    }
-    else {
-      this.dispatchEvent(new CustomEvent('save', {bubbles: true, composed: true}));
-      form.close();
-    }
+    if (!this.isValid()) return;
+    this.dispatchEvent(new CustomEvent('save', { bubbles: true, composed: true, detail: {
+      contact: {
+        fn: this.fn.value,
+        adr_street: this.adr_street.value,
+        adr_locality: this.adr_locality.value,
+        adr_region: this.adr_region.value,
+        adr_code: this.adr_code.value,
+        adr_country: this.adr_country.value,
+        tel: this.tel.value,
+        email: this.email.value,
+      }
+    }}));
+    this.form.close();
   }
 
   show(contact) {

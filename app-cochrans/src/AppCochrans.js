@@ -25,6 +25,11 @@ export class AppCochrans extends LitElement {
     };
   }
 
+  constructor() {
+    super();
+    this.contacts = []
+  }
+
   navigate(state, path) {
     this.state = state;
     this.path = path;
@@ -35,14 +40,15 @@ export class AppCochrans extends LitElement {
     // this.route(window.location);
     this.db = firebase.firestore();
 
-    this.transientContacts = []
-    this.contacts = [
-      {fn: 'Jeff Laughlin'},
-      {fn: 'James Laughlin'},
-      {fn: 'Sofia Laughlin'},
-      {fn: 'Joseph Laughlin'},
-      {fn: 'Ania Laughlin'},
-    ]
+    this.transientContacts = [];
+
+    // this.contacts = [
+    //   {fn: 'Jeff Laughlin'},
+    //   {fn: 'James Laughlin'},
+    //   {fn: 'Sofia Laughlin'},
+    //   {fn: 'Joseph Laughlin'},
+    //   {fn: 'Ania Laughlin'},
+    // ]
 
     this.accounts = [
       {fn: 'Jeff Laughlin'},
@@ -59,11 +65,19 @@ export class AppCochrans extends LitElement {
 
     this.path = document.location.pathname;
 
-    window.firebase.auth().onAuthStateChanged(function(user) {
+    window.firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         // User is signed in.
+        this.user = user
+        this.db.collection('users').doc(this.user.uid).onSnapshot(doc=>{
+          if (doc.exists)
+            this.contacts = doc.data().contacts
+          else
+            this.db.collection('users').doc(this.user.uid).set({contacts: []})
+        })
       } else {
         // No user is signed in.
+        this.user = null
       }
     });
 
@@ -105,6 +119,7 @@ export class AppCochrans extends LitElement {
       /* Write NFC tags */
       console.warn("Browser does not support writing NFC tags")
     }
+
   }
 
   onSubmit (event) {
@@ -224,6 +239,7 @@ END:VCARD`.replace('\n', '\r\n');
       <h2>My Contacts</h2>
       <c-contacts
         .contacts=${this.contacts}
+        .user=${this.user}
       ></c-contacts>
       `
     }

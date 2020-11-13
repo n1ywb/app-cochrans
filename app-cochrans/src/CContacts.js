@@ -9,7 +9,8 @@ export class CContacts extends LitElement {
   static get properties() {
     return {
       contacts: { type: Array },
-      dialogOpen: { type: Boolean }
+      dialogOpen: { type: Boolean },
+      user: { type: Object }
     };
   }
 
@@ -18,8 +19,31 @@ export class CContacts extends LitElement {
     this.db = firebase.firestore();
   }
 
-  formSubmitted(evt) {
-    debugger;
+  saveContacts(evt) {
+    let contacts;
+    const contact = evt.detail.contact;
+    if (this.state === 'new')
+      contacts = [...this.contacts, contact]
+    else if (this.state === 'edit')
+      contacts = [
+        ...this.contacts.slice(0,this.editIndex), 
+        contact, 
+        ...this.contacts.slice(this.editIndex + 1)
+      ]
+    this.db.collection('users').doc(this.user.uid).update({
+      contacts: contacts
+    })
+  }
+
+  openNewContactDialog() {
+    this.state = 'new';
+    this.contactFormDialog.show({});
+  }
+
+  openEditContactDialog(contact, index) {
+    this.state = 'edit';
+    this.editIndex = index
+    this.contactFormDialog.show(contact);
   }
 
   static styles = css`
@@ -37,11 +61,10 @@ export class CContacts extends LitElement {
     return html`
       <mwc-list>
         ${
-          this.contacts && this.contacts.map(contact=>html`
+          this.contacts && this.contacts.map((contact, idx)=>html`
             <mwc-list-item 
               hasMeta 
-              .contact=${contact}
-              @click="${(evt)=>this.contactFormDialog.show(evt.currentTarget.contact)}"
+              @click="${()=>this.openEditContactDialog(contact, idx)}"
             >
               <span>${contact.fn}</span>
               <mwc-icon slot="meta">edit</mwc-icon>
@@ -52,11 +75,11 @@ export class CContacts extends LitElement {
 
       <mwc-fab 
         icon=add
-        @click="${()=>this.shadowRoot.querySelector('c-contact-form').show()}"
+        @click="${this.openNewContactDialog}"
       ></mwc-fab>
 
       <c-contact-form
-        @submit="${this.formSubmitted}"
+        @save="${this.saveContacts}"
       ></c-contact-form>
     `;
   }
