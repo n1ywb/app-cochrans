@@ -33,6 +33,8 @@ export class AppCochrans extends LitElement {
 
   firstUpdated() {
     // this.route(window.location);
+    this.db = firebase.firestore();
+
     this.transientContacts = []
     this.contacts = [
       {fn: 'Jeff Laughlin'},

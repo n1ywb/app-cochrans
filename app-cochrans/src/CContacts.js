@@ -4,7 +4,6 @@ import '@material/mwc-fab/mwc-fab.js';
 import '@material/mwc-icon/mwc-icon.js';
 import '@material/mwc-list/mwc-list.js';
 import '@material/mwc-list/mwc-list-item.js';
-import dialogPolyfill from 'dialog-polyfill'
 
 export class CContacts extends LitElement {
   static get properties() {
@@ -15,8 +14,12 @@ export class CContacts extends LitElement {
   }
 
   firstUpdated() {
-    this.contactFormDialog = this.shadowRoot.querySelector('#contactFormDialog')
-    dialogPolyfill.registerDialog(this.contactFormDialog)
+    this.contactFormDialog = this.shadowRoot.querySelector('c-contact-form');
+    this.db = firebase.firestore();
+  }
+
+  formSubmitted(evt) {
+    debugger;
   }
 
   static styles = css`
@@ -37,7 +40,8 @@ export class CContacts extends LitElement {
           this.contacts && this.contacts.map(contact=>html`
             <mwc-list-item 
               hasMeta 
-              @click="${()=>this.contactFormDialog.showModal()}"
+              .contact=${contact}
+              @click="${(evt)=>this.contactFormDialog.show(evt.currentTarget.contact)}"
             >
               <span>${contact.fn}</span>
               <mwc-icon slot="meta">edit</mwc-icon>
@@ -48,14 +52,12 @@ export class CContacts extends LitElement {
 
       <mwc-fab 
         icon=add
-        @click="${()=>this.contactFormDialog.showModal()}"
+        @click="${()=>this.shadowRoot.querySelector('c-contact-form').show()}"
       ></mwc-fab>
 
-      <dialog id=contactFormDialog>
-        <c-contact-form
-          .fn="${'asdf'}"
-        ></c-contact-form>
-      </dialog>
+      <c-contact-form
+        @submit="${this.formSubmitted}"
+      ></c-contact-form>
     `;
   }
 }

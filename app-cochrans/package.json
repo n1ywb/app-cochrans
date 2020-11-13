@@ -62,6 +62,7 @@
   "license": "MIT",
   "dependencies": {
     "@material/mwc-button": "0.20.0-canary.184861ee.0",
+    "@material/mwc-dialog": "^0.19.1",
     "@material/mwc-drawer": "^0.19.1",
     "@material/mwc-fab": "0.20.0-canary.184861ee.0",
     "@material/mwc-icon": "^0.19.1",
