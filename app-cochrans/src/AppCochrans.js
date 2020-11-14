@@ -3,39 +3,94 @@ import { openWcLogo } from './open-wc-logo.js';
 
 import '@material/mwc-textfield';
 import '@material/mwc-button';
-import { parse } from './vcard';
 import '@material/mwc-list/mwc-list.js';
 import '@material/mwc-list/mwc-list-item.js';
 import '@material/mwc-list/mwc-check-list-item.js';
 import dialogPolyfill from 'dialog-polyfill'
+import { router, navigator , outlet } from 'lit-element-router';
+
 
 import './c-contact-form';
 import './c-contacts';
 import './c-users';
 
-export class AppCochrans extends LitElement {
+
+import { parse } from './vcard';
+ 
+// @outlet
+class Main extends outlet(LitElement) {
+  render() {
+    return html`
+      <slot></slot>
+    `;
+  }
+}
+ 
+customElements.define('app-main', Main);
+
+
+// @router
+// @navigator
+export class AppCochrans extends router(navigator(LitElement)) {
 
   static get properties() {
     return {
       title: { type: String },
       page: { type: String },
       contact: { type: String },
-      user: { type: Object },
       db: { type: Object },
-      path: { type: String },
+      user: { type: Object },
       contacts: { type: Array },
+      params: { type: Object },
+      query: { type: Object },
+      route: { type: String, reflect: true, attribute: 'route' },
+      canceled: { type: Boolean },
     };
+  }
+
+  static get routes() {
+    return [{
+      name: 'home',
+      pattern: '',
+      data: { title: 'Home' }
+    },
+    {
+      name: 'contacts',
+      pattern: 'contacts'
+    },
+    {
+      name: 'visit',
+      pattern: 'visit'
+    },
+    {
+      name: 'checkin',
+      pattern: 'admin/checkin'
+    },
+    {
+      name: 'adminUsers',
+      pattern: 'admin/users'
+    },
+    {
+      name: 'adminUsersUid',
+      pattern: 'admin/users/:uid'
+    },
+    {
+      name: 'not-found',
+      pattern: '*'
+    }];
   }
 
   constructor() {
     super();
     this.contacts = []
+    this.transientContacts = []
   }
 
-  navigate(state, path) {
-    this.state = state;
-    this.path = path;
-    history.pushState(state, '', path);
+  router(route, params, query, data) {
+    this.route = route;
+    this.params = params;
+    this.query = query;
+    console.log(route, params, query, data);
   }
 
   set user(user) {
@@ -75,26 +130,7 @@ export class AppCochrans extends LitElement {
   get user() { return this._user; }
 
   firstUpdated() {
-    this.path = document.location.pathname;
-
-    // this.route(window.location);
-
     this.transientContacts = [];
-
-    // this.contacts = [
-    //   {fn: 'Jeff Laughlin'},
-    //   {fn: 'James Laughlin'},
-    //   {fn: 'Sofia Laughlin'},
-    //   {fn: 'Joseph Laughlin'},
-    //   {fn: 'Ania Laughlin'},
-    // ]
-
-    [...this.shadowRoot.querySelectorAll('dialog')].map(dialog=>dialogPolyfill.registerDialog(dialog));
-
-    window.addEventListener('popstate', event => {
-      this.path = document.location.pathname;
-      this.state = event.state;
-    });
 
     if (!('NDEFReader' in window)) {
       /* Scan NFC tags */ 
@@ -204,22 +240,21 @@ END:VCARD`.replace('\n', '\r\n');
     `;
   }
 
-  route (path) {
-    if (path == '/') {
-      return html`
+  viewHome() {
+    return html`
       <p>Welcome, ${this.user?.displayName}</p>
       <p>Would you like to:</p>
 
       <mwc-button 
         raised
         label="Visit Today" 
-        @click="${()=>this.navigate(null, '/visit')}"
+        @click="${()=>this.navigate('/visit')}"
       ></mwc-button>
 
       <mwc-button 
         raised
         label="Manage Contacts" 
-        @click="${()=>this.navigate(null, '/contacts')}"
+        @click="${()=>this.navigate('/contacts')}"
       ></mwc-button>
 
       <hr>
@@ -228,19 +263,19 @@ END:VCARD`.replace('\n', '\r\n');
       <mwc-button 
         raised
         label="Check Someone else in" 
-        @click="${()=>this.navigate({}, '/admin/checkin')}"
+        @click="${()=>this.navigate('/admin/checkin')}"
       ></mwc-button>
 
       <mwc-button 
         raised
         label="Manage Users" 
-        @click="${()=>this.navigate(null, '/admin/users')}"
+        @click="${()=>this.navigate('/admin/users')}"
       ></mwc-button>
 
       <mwc-button 
         raised
         label="Write NFC Tag" 
-        @click="${()=>this.navigate(null, '/admin/writetag')}"
+        @click="${()=>this.navigate('/admin/writetag')}"
       ></mwc-button>
 
       <mwc-icon
@@ -248,90 +283,56 @@ END:VCARD`.replace('\n', '\r\n');
       >contactless</mwc-icon>
       Touch phone to NFC tag to read contact info
     `
-    }
-    if (path == '/contacts') {
-      return html`
-      <h2>My Contacts</h2>
-      <c-contacts
-        .contacts=${this.contacts}
-        .user=${this.user}
-        .db=${this.db}
-      ></c-contacts>
-      `
-    }
-    if (path == '/visit') {
-      return html`
-        Who is with you today, ${(new Date()).toDateString()}?
-        <mwc-list multi>
-          ${this.contacts.map(contact => html`
-            <mwc-check-list-item>${contact.fn}</mwc-check-list-item>
-          `)}
-        </mwc-list>
-        <mwc-button 
-          icon=add 
-          label="Add somebody else"
-          @click="${()=>this.shadowRoot.querySelector('dialog#newContact').showModal()}"
-        ></mwc-button>
-        Each member of your party must attest that the following statements are true as read by them:
-        <div style='text-align: left;'>
-          ${this.attest_text()}
-        </div>
-        <mwc-button 
-          raised 
-          type=submit 
-          @click="${()=>this.shadowRoot.querySelector('#attestThanks').showModal()}"
-        >Attest</mwc-button>
-      `;
-    }
-    if (path == '/admin/checkin') {
-      return html`
-        Who is with you today, ${(new Date()).toDateString()}?
-        <mwc-list multi>
-          ${this.transientContacts.map(contact => html`
-            <mwc-check-list-item>${contact.fn}</mwc-check-list-item>
-          `)}
-        </mwc-list>
-        <mwc-button 
-          icon=add 
-          label="Add somebody else"
-          @click="${()=>this.shadowRoot.querySelector('dialog#newContact').showModal()}"
-        ></mwc-button>
-        Each member of your party must attest that the following statements are true as read by them:
-        <div style='text-align: left;'>
-          ${this.attest_text()}
-        </div>
-        <mwc-button 
-          raised 
-          type=submit 
-          @click="${()=>this.shadowRoot.querySelector('#attestThanks').showModal()}"
-        >Attest</mwc-button>
-      `;
-    }
-    if (path == '/admin/users') {
-      return html`
-        <c-users
-          .db=${this.db}
-          .user=${this.user}
-        ></c-users>
-      `;
-    }
-    
+  }
+
+  viewVisit() {
     return html`
-      <h1>404 Page Not Found</h1>
-
+      Who is with you today, ${(new Date()).toDateString()}?
+      <mwc-list multi>
+        ${this.contacts.map(contact => html`
+          <mwc-check-list-item>${contact.fn}</mwc-check-list-item>
+        `)}
+      </mwc-list>
       <mwc-button 
-        raised
-        label="Go Home" 
-        @click="${()=>this.navigate(null, '/')}"
+        icon=add 
+        label="Add somebody else"
+        @click="${()=>this.shadowRoot.querySelector('dialog#newContact').showModal()}"
       ></mwc-button>
-
+      Each member of your party must attest that the following statements are true as read by them:
+      <div style='text-align: left;'>
+        ${this.attest_text()}
+      </div>
       <mwc-button 
-        raised
-        label="Go Back" 
-        @click="${()=>history.back()}"
+        raised 
+        type=submit 
+        @click="${()=>this.shadowRoot.querySelector('#attestThanks').showModal()}"
+      >Attest</mwc-button>
+    `;
+  }
+
+  viewCheckin() {
+    return html`
+      Who is with you today, ${(new Date()).toDateString()}?
+      <mwc-list multi>
+        ${this.transientContacts.map(contact => html`
+          <mwc-check-list-item>${contact.fn}</mwc-check-list-item>
+        `)}
+      </mwc-list>
+      <mwc-button 
+        icon=add 
+        label="Add somebody else"
+        @click="${()=>this.shadowRoot.querySelector('dialog#newContact').showModal()}"
       ></mwc-button>
-    `
-    
+      Each member of your party must attest that the following statements are true as read by them:
+      <div style='text-align: left;'>
+        ${this.attest_text()}
+      </div>
+      <mwc-button 
+        raised 
+        type=submit 
+        @click="${()=>this.shadowRoot.querySelector('#attestThanks').showModal()}"
+      >Attest</mwc-button>
+    `;
   }
 
   attest_text() {
@@ -360,33 +361,55 @@ END:VCARD`.replace('\n', '\r\n');
 
   render() {
     return html`
-      ${ this.route(this.path) }
+      <app-main active-route=${this.route}>
+
+        <div route='home'>${this.viewHome()}</div>
+
+        <c-contacts
+          route='contacts'
+          .db=${this.db}
+          .user=${this.user}
+          .contacts=${this.contacts}
+        ></c-contacts>
+
+        <div route='visit'>${this.viewVisit()}</div>
+
+        <div route='adminCheckin'>${this.viewCheckin()}</div>
+
+        <c-users
+          route='adminUsers'
+          .db=${this.db}
+          .user=${this.user}
+        ></c-users>
+ 
+        <div route=not-found>
+          <h1>404 Page Not Found</h1>
+
+          <mwc-button 
+            raised
+            label="Go Home" 
+            @click="${()=>this.navigate('/')}"
+          ></mwc-button>
+
+          <mwc-button 
+            raised
+            label="Go Back" 
+            @click="${()=>history.back()}"
+          ></mwc-button>
+        </div>
+      </app-main>
 
       <dialog id=checkinDialog>
         <c-contact-form></c-contact-form>
         ${this.attest_text()}
       </dialog>
 
-      <dialog id=attestThanks>
+      <mwc-dialog id=attestThanks>
         <form method=dialog>
           <p>Thanks for submitting your attestation!</p>
-          <mwc-button type=submit @click=${()=>this.navigate({}, '/')}>Go Home</mwc-button>
+          <mwc-button type=submit @click=${()=>this.navigate('/')}>Go Home</mwc-button>
         </form>
-      </dialog>
-
-      <dialog id=newContact>
-        <form method=dialog>
-          <c-contact-form></c-contact-form>
-          <mwc-button 
-            type=submit 
-            @click=${(e)=>e.target.closest('form').requestSubmit()}
-          >Save</mwc-button>
-          <mwc-button 
-            type=cancel
-            @click=${(e)=>e.target.closest('form').requestSubmit()}
-          >Cancel</mwc-button>
-        </form>
-      </dialog>
+      </mwc-dialog>
 
       <p class="app-footer">
         &copy;2020 Jeff Laughlin

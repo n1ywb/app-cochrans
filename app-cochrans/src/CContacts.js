@@ -59,6 +59,7 @@ export class CContacts extends LitElement {
 
   render() {
     return html`
+      <h2>My Contacts</h2>
       <mwc-list>
         ${
           this.contacts && this.contacts.map((contact, idx)=>html`

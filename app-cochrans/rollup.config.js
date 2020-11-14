@@ -19,6 +19,7 @@ const baseConfig = createSpaConfig({
 
   // set to true to inject the service worker registration into your index.html
   injectServiceWorker: false,
+  babel: true
 });
 
 export default merge(baseConfig, {
