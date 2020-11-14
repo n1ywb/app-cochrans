@@ -37,8 +37,9 @@ export class AppCochrans extends LitElement {
   }
 
   firstUpdated() {
+    this.path = document.location.pathname;
+
     // this.route(window.location);
-    this.db = firebase.firestore();
 
     this.transientContacts = [];
 
@@ -63,17 +64,17 @@ export class AppCochrans extends LitElement {
       this.state = event.state;
     })
 
-    this.path = document.location.pathname;
 
     window.firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         // User is signed in.
         this.user = user
-        this.db.collection('users').doc(this.user.uid).onSnapshot(doc=>{
+        const db = firebase.firestore();
+        db.collection('users').doc(this.user.uid).onSnapshot(doc=>{
           if (doc.exists)
             this.contacts = doc.data().contacts
           else
-            this.db.collection('users').doc(this.user.uid).set({contacts: []})
+            db.collection('users').doc(this.user.uid).set({contacts: []})
         })
       } else {
         // No user is signed in.
@@ -234,7 +235,7 @@ END:VCARD`.replace('\n', '\r\n');
       Touch phone to NFC tag to read contact info
     `
     }
-    else if (path == '/contacts') {
+    if (path == '/contacts') {
       return html`
       <h2>My Contacts</h2>
       <c-contacts
@@ -243,7 +244,7 @@ END:VCARD`.replace('\n', '\r\n');
       ></c-contacts>
       `
     }
-    else if (path == '/visit') {
+    if (path == '/visit') {
       return html`
         Who is with you today, ${(new Date()).toDateString()}?
         <mwc-list multi>
@@ -267,7 +268,7 @@ END:VCARD`.replace('\n', '\r\n');
         >Attest</mwc-button>
       `;
     }
-    else if (path == '/admin/checkin') {
+    if (path == '/admin/checkin') {
       return html`
         Who is with you today, ${(new Date()).toDateString()}?
         <mwc-list multi>
@@ -291,7 +292,7 @@ END:VCARD`.replace('\n', '\r\n');
         >Attest</mwc-button>
       `;
     }
-    else if (path == '/admin/accounts') {
+    if (path == '/admin/accounts') {
       return html`
         <mwc-list>
           ${ this.accounts.map(account=>html`
@@ -300,7 +301,7 @@ END:VCARD`.replace('\n', '\r\n');
         </mwc-list>
       `;
     }
-    else {
+    
       return html`
         <h1>404 Page Not Found</h1>
 
@@ -316,7 +317,7 @@ END:VCARD`.replace('\n', '\r\n');
           @click="${()=>history.back()}"
         ></mwc-button>
       `
-    }
+    
   }
 
   attest_text() {
