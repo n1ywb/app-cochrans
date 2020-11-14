@@ -20,6 +20,7 @@ export class AppCochrans extends LitElement {
       page: { type: String },
       contact: { type: String },
       user: { type: Object },
+      db: { type: Object },
       path: { type: String },
       contacts: { type: Array },
     };
@@ -35,6 +36,25 @@ export class AppCochrans extends LitElement {
     this.path = path;
     history.pushState(state, '', path);
   }
+
+  set user(user) {
+    const oldUser = this._user;
+    this._user = user;
+    if (user) {
+      // User is signed in.
+      this.db.collection('users').doc(user.uid).onSnapshot(doc=>{
+        if (doc.exists) {
+          this.contacts = doc.data().contacts;
+        }
+        else {
+          this.db.collection('users').doc(user.uid).set({contacts: []});
+        }
+      })
+    }  
+    this.requestUpdate('user', this._user);
+  }
+
+  get user() { return this._user; }
 
   firstUpdated() {
     this.path = document.location.pathname;
@@ -62,24 +82,6 @@ export class AppCochrans extends LitElement {
     window.addEventListener('popstate', event => {
       this.path = document.location.pathname;
       this.state = event.state;
-    })
-
-
-    window.firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        // User is signed in.
-        this.user = user
-        const db = firebase.firestore();
-        db.collection('users').doc(this.user.uid).onSnapshot(doc=>{
-          if (doc.exists)
-            this.contacts = doc.data().contacts
-          else
-            db.collection('users').doc(this.user.uid).set({contacts: []})
-        })
-      } else {
-        // No user is signed in.
-        this.user = null
-      }
     });
 
     if (!('NDEFReader' in window)) {
@@ -241,6 +243,7 @@ END:VCARD`.replace('\n', '\r\n');
       <c-contacts
         .contacts=${this.contacts}
         .user=${this.user}
+        .db=${this.db}
       ></c-contacts>
       `
     }

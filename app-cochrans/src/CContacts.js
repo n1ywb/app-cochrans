@@ -10,18 +10,18 @@ export class CContacts extends LitElement {
     return {
       contacts: { type: Array },
       dialogOpen: { type: Boolean },
-      user: { type: Object }
+      user: { type: Object },
+      db: { type: Object },
     };
   }
 
   firstUpdated() {
     this.contactFormDialog = this.shadowRoot.querySelector('c-contact-form');
-    this.db = firebase.firestore();
   }
 
   saveContacts(evt) {
     let contacts;
-    const contact = evt.detail.contact;
+    const {contact} = evt.detail;
     if (this.state === 'new')
       contacts = [...this.contacts, contact]
     else if (this.state === 'edit')
@@ -31,7 +31,7 @@ export class CContacts extends LitElement {
         ...this.contacts.slice(this.editIndex + 1)
       ]
     this.db.collection('users').doc(this.user.uid).update({
-      contacts: contacts
+      contacts
     })
   }
 

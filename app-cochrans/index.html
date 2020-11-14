@@ -101,6 +101,8 @@
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     firebase.analytics();
+    const db = firebase.firestore();
+    document.querySelector('app-cochrans').db = db;
 
     let ui = new firebaseui.auth.AuthUI(firebase.auth());
 
