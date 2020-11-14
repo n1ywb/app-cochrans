@@ -41,14 +41,29 @@ export class AppCochrans extends LitElement {
     const oldUser = this._user;
     this._user = user;
     if (user) {
+      debugger;
       // User is signed in.
       setTimeout(()=>{
         this.db.collection('users').doc(user.uid).onSnapshot(doc=>{
           if (doc.exists) {
             this.contacts = doc.data().contacts;
+            this.db.collection('users').doc(user.uid).update({
+              uid: user.uid,
+              displayName: user.displayName,
+              email: user.email,
+              phoneNumber: user.phoneNumber,
+              photoURL: user.photoURL
+            })
           }
           else {
-            this.db.collection('users').doc(user.uid).set({contacts: []});
+            this.db.collection('users').doc(user.uid).set({
+              contacts: [],
+              uid: user.uid,
+              displayName: user.displayName,
+              email: user.email,
+              phoneNumber: user.phoneNumber,
+              photoURL: user.photoURL
+            });
           }
         })
       }, 1000);
