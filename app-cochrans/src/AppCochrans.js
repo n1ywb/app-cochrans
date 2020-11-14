@@ -11,6 +11,7 @@ import dialogPolyfill from 'dialog-polyfill'
 
 import './c-contact-form';
 import './c-contacts';
+import './c-users';
 
 export class AppCochrans extends LitElement {
 
@@ -41,7 +42,6 @@ export class AppCochrans extends LitElement {
     const oldUser = this._user;
     this._user = user;
     if (user) {
-      debugger;
       // User is signed in.
       setTimeout(()=>{
         this.db.collection('users').doc(user.uid).onSnapshot(doc=>{
@@ -315,11 +315,11 @@ END:VCARD`.replace('\n', '\r\n');
     }
     if (path == '/admin/accounts') {
       return html`
-        <mwc-list>
-          ${ this.accounts.map(account=>html`
-            <mwc-list-item>${account.fn}</mwc-list-item>
-          `)}
-        </mwc-list>
+        <c-users
+          .db=${this.db}
+          .user=${this.user}
+        ></c-users>
+
       `;
     }
     
