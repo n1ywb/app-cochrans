@@ -89,12 +89,6 @@ export class AppCochrans extends LitElement {
     //   {fn: 'Ania Laughlin'},
     // ]
 
-    this.accounts = [
-      {fn: 'Jeff Laughlin'},
-      {fn: 'Robert Farrell'},
-      {fn: 'Roger Brown'},
-    ];
-
     [...this.shadowRoot.querySelectorAll('dialog')].map(dialog=>dialogPolyfill.registerDialog(dialog));
 
     window.addEventListener('popstate', event => {
@@ -239,8 +233,8 @@ END:VCARD`.replace('\n', '\r\n');
 
       <mwc-button 
         raised
-        label="Manage Accounts" 
-        @click="${()=>this.navigate(null, '/admin/accounts')}"
+        label="Manage Users" 
+        @click="${()=>this.navigate(null, '/admin/users')}"
       ></mwc-button>
 
       <mwc-button 
@@ -313,31 +307,30 @@ END:VCARD`.replace('\n', '\r\n');
         >Attest</mwc-button>
       `;
     }
-    if (path == '/admin/accounts') {
+    if (path == '/admin/users') {
       return html`
         <c-users
           .db=${this.db}
           .user=${this.user}
         ></c-users>
-
       `;
     }
     
-      return html`
-        <h1>404 Page Not Found</h1>
+    return html`
+      <h1>404 Page Not Found</h1>
 
-        <mwc-button 
-          raised
-          label="Go Home" 
-          @click="${()=>this.navigate(null, '/')}"
-        ></mwc-button>
+      <mwc-button 
+        raised
+        label="Go Home" 
+        @click="${()=>this.navigate(null, '/')}"
+      ></mwc-button>
 
-        <mwc-button 
-          raised
-          label="Go Back" 
-          @click="${()=>history.back()}"
-        ></mwc-button>
-      `
+      <mwc-button 
+        raised
+        label="Go Back" 
+        @click="${()=>history.back()}"
+      ></mwc-button>
+    `
     
   }
 
