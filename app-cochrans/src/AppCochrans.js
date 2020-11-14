@@ -237,6 +237,12 @@ END:VCARD`.replace('\n', '\r\n');
         max-height: 80vh;
         overflow: auto;
       }
+
+      div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
     `;
   }
 
