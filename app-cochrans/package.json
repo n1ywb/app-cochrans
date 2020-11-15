@@ -73,6 +73,7 @@
     "dialog-polyfill": "^0.5.3",
     "iron-swipeable-pages": "https://github.com/myfrom/iron-swipeable-pages",
     "lit-element": "^2.0.1",
+    "lit-element-router": "^2.0.3",
     "lit-html": "^1.0.0"
   }
 }
