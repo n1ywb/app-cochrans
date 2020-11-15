@@ -2,7 +2,9 @@ import { LitElement, html, css } from 'lit-element';
 import '@material/mwc-list/mwc-list.js';
 import '@material/mwc-list/mwc-list-item.js';
 
-export class CUsers extends LitElement {
+import { navigator } from "lit-element-router";
+
+export class CUsers extends navigator(LitElement) {
   static get styles() {
     return css`...`
   }
@@ -10,20 +12,23 @@ export class CUsers extends LitElement {
   static get properties() {
     return { 
       db: Object,
-      users: { type: Array }
+      users: { type: Object }
     };
   }
 
   constructor() {
     super();
-    this.users = []
+    this.users = {};
   }
 
   firstUpdated () {
     this.db.collection('users').onSnapshot(collection => {
-      const users = [];
+      const users = {};
       console.log(collection)
-      collection.forEach(doc=>users.push(doc.data()))
+      collection.forEach(doc=>{
+        const user = doc.data();
+        users[user.uid] = user;
+      })
       this.users = users
     })
   }
@@ -31,8 +36,10 @@ export class CUsers extends LitElement {
   render() {
     return html`
       <mwc-list>
-        ${this.users.map(user => html`
-          <mwc-list-item>${user.displayName} ${user.phoneNumber} ${user.email}</mwc-list-item>
+        ${[...Object.values(this.users)].map(user => html`
+          <mwc-list-item
+            @click=${()=>this.navigate(`/admin/users/${user.uid}`)}
+          >${user.displayName} ${user.phoneNumber} ${user.email}</mwc-list-item>
         `)}
       </mwc-list>
         `

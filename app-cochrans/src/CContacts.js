@@ -10,9 +10,40 @@ export class CContacts extends LitElement {
     return {
       contacts: { type: Array },
       dialogOpen: { type: Boolean },
-      user: { type: Object },
+      uid: { type: String },
       db: { type: Object },
     };
+  }
+
+  set uid(uid) {
+    const olduid = this._uid;
+    this._uid = uid;
+    this._uidSnapshot && this._uidSnapshot();
+    if (uid) {
+      setTimeout(
+        () => {
+          this._uidSnapshot = this.db.collection('users').doc(uid).onSnapshot(doc => {
+            if (doc.exists) {
+              this.contacts = doc.data().contacts;
+            }
+            else {
+              this.db.collection('users').doc(uid).update({
+                contacts: []
+              });
+            }
+          })
+        },
+        0
+      );
+    }
+    this.requestUpdate('uid', this._uid);
+  }
+
+  get uid() { return this._uid; }
+
+  constructor() {
+    super();
+    this.uid = '';
   }
 
   firstUpdated() {
@@ -30,7 +61,7 @@ export class CContacts extends LitElement {
         contact, 
         ...this.contacts.slice(this.editIndex + 1)
       ]
-    this.db.collection('users').doc(this.user.uid).update({
+    this.db.collection('users').doc(this.uid).update({
       contacts
     })
   }
@@ -59,7 +90,7 @@ export class CContacts extends LitElement {
 
   render() {
     return html`
-      <h2>My Contacts</h2>
+      <h2>Contacts</h2>
       <mwc-list>
         ${
           this.contacts && this.contacts.map((contact, idx)=>html`

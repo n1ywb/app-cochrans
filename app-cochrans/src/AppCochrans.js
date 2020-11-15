@@ -12,6 +12,7 @@ import { router, navigator , outlet } from 'lit-element-router';
 
 import './c-contact-form';
 import './c-contacts';
+import './c-contacts-check-list';
 import './c-users';
 
 
@@ -49,41 +50,44 @@ export class AppCochrans extends router(navigator(LitElement)) {
   }
 
   static get routes() {
-    return [{
-      name: 'home',
-      pattern: '',
-      data: { title: 'Home' }
-    },
-    {
-      name: 'contacts',
-      pattern: 'contacts'
-    },
-    {
-      name: 'visit',
-      pattern: 'visit'
-    },
-    {
-      name: 'checkin',
-      pattern: 'admin/checkin'
-    },
-    {
-      name: 'adminUsers',
-      pattern: 'admin/users'
-    },
-    {
-      name: 'adminUsersUid',
-      pattern: 'admin/users/:uid'
-    },
-    {
-      name: 'not-found',
-      pattern: '*'
-    }];
+    return [
+      {
+        name: 'home',
+        pattern: '',
+        data: { title: 'Home' }
+      },
+      {
+        name: 'contacts',
+        pattern: 'contacts'
+      },
+      {
+        name: 'visit',
+        pattern: 'visit'
+      },
+      {
+        name: 'checkin',
+        pattern: 'admin/checkin'
+      },
+      {
+        name: 'adminUsers',
+        pattern: 'admin/users'
+      },
+      {
+        name: 'adminUsersUid',
+        pattern: 'admin/users/:uid'
+      },
+      {
+        name: 'not-found',
+        pattern: '*'
+      }
+    ];
   }
 
   constructor() {
     super();
     this.contacts = []
     this.transientContacts = []
+    this.user = {};
   }
 
   router(route, params, query, data) {
@@ -96,12 +100,12 @@ export class AppCochrans extends router(navigator(LitElement)) {
   set user(user) {
     const oldUser = this._user;
     this._user = user;
-    if (user) {
+    this._userSnapshot && this._userSnapshot();
+    if (user.uid) {
       // User is signed in.
       setTimeout(()=>{
-        this.db.collection('users').doc(user.uid).onSnapshot(doc=>{
+        this._userSnapshot = this.db.collection('users').doc(user.uid).onSnapshot(doc=>{
           if (doc.exists) {
-            this.contacts = doc.data().contacts;
             this.db.collection('users').doc(user.uid).update({
               uid: user.uid,
               displayName: user.displayName,
@@ -112,7 +116,6 @@ export class AppCochrans extends router(navigator(LitElement)) {
           }
           else {
             this.db.collection('users').doc(user.uid).set({
-              contacts: [],
               uid: user.uid,
               displayName: user.displayName,
               email: user.email,
@@ -121,7 +124,7 @@ export class AppCochrans extends router(navigator(LitElement)) {
             });
           }
         })
-      }, 1000);
+      }, 0);
     }
       
     this.requestUpdate('user', this._user);
@@ -291,19 +294,13 @@ END:VCARD`.replace('\n', '\r\n');
     `
   }
 
-  viewVisit() {
+  viewVisit(uid) {
     return html`
       Who is with you today, ${(new Date()).toDateString()}?
-      <mwc-list multi>
-        ${this.contacts.map(contact => html`
-          <mwc-check-list-item>${contact.fn}</mwc-check-list-item>
-        `)}
-      </mwc-list>
-      <mwc-button 
-        icon=add 
-        label="Add somebody else"
-        @click="${()=>this.shadowRoot.querySelector('dialog#newContact').showModal()}"
-      ></mwc-button>
+      <c-contacts-check-list
+        .db=${this.db}
+        .uid=${uid}
+      ></c-contacts-check-list>
       Each member of your party must attest that the following statements are true as read by them:
       <div style='text-align: left;'>
         ${this.attest_text()}
@@ -374,19 +371,23 @@ END:VCARD`.replace('\n', '\r\n');
         <c-contacts
           route='contacts'
           .db=${this.db}
-          .user=${this.user}
-          .contacts=${this.contacts}
+          .uid=${this.user.uid}
         ></c-contacts>
 
-        <div route='visit'>${this.viewVisit()}</div>
+        <div route='visit'>${this.viewVisit(this.user.uid)}</div>
 
         <div route='adminCheckin'>${this.viewCheckin()}</div>
 
         <c-users
           route='adminUsers'
           .db=${this.db}
-          .user=${this.user}
         ></c-users>
+ 
+         <c-contacts
+          route='adminUsersUid'
+          .db=${this.db}
+          .uid=${this.params.uid}
+        ></c-contacts>
  
         <div route=not-found>
           <h1>404 Page Not Found</h1>
