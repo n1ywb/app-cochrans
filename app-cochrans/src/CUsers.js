@@ -38,7 +38,7 @@ export class CUsers extends navigator(LitElement) {
       <mwc-list>
         ${[...Object.values(this.users)].map(user => html`
           <mwc-list-item
-            @click=${()=>this.navigate(`/admin/users/${user.uid}`)}
+            @click=${()=>this.navigate(`/users/${user.uid}`)}
           >${user.displayName} ${user.phoneNumber} ${user.email}</mwc-list-item>
         `)}
       </mwc-list>

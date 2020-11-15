@@ -5,41 +5,41 @@ import '@material/mwc-icon/mwc-icon.js';
 import '@material/mwc-list/mwc-list.js';
 import '@material/mwc-list/mwc-list-item.js';
 
-export class CContacts extends LitElement {
+import { navigator } from 'lit-element-router';
+
+export class CContacts extends navigator(LitElement) {
   static get properties() {
     return {
       contacts: { type: Array },
-      dialogOpen: { type: Boolean },
       uid: { type: String },
       db: { type: Object },
     };
   }
 
-  set uid(uid) {
-    const olduid = this._uid;
-    this._uid = uid;
-    this._uidSnapshot && this._uidSnapshot();
-    if (uid) {
+ updated(changedProps) {
+    if (changedProps.has('uid') && this.uid && this.db) {
+      this._uidSnapshot && this._uidSnapshot();
       setTimeout(
         () => {
-          this._uidSnapshot = this.db.collection('users').doc(uid).onSnapshot(doc => {
-            if (doc.exists) {
-              this.contacts = doc.data().contacts;
-            }
-            else {
-              this.db.collection('users').doc(uid).update({
-                contacts: []
-              });
-            }
+          this._uidSnapshot = this.db
+            .collection('users')
+            .doc(this.uid)
+            .collection('contacts')
+            .onSnapshot(collection => {
+              const contacts = [];
+              collection.forEach(doc=>{
+                contacts.push({
+                  cid: doc.id,
+                  ...doc.data()
+                })
+              })
+              this.contacts = contacts;
           })
         },
         0
-      );
+      );    
     }
-    this.requestUpdate('uid', this._uid);
-  }
-
-  get uid() { return this._uid; }
+  } 
 
   constructor() {
     super();
@@ -50,31 +50,17 @@ export class CContacts extends LitElement {
     this.contactFormDialog = this.shadowRoot.querySelector('c-contact-form');
   }
 
-  saveContacts(evt) {
-    let contacts;
+  saveContact(evt) {
     const {contact} = evt.detail;
-    if (this.state === 'new')
-      contacts = [...this.contacts, contact]
-    else if (this.state === 'edit')
-      contacts = [
-        ...this.contacts.slice(0,this.editIndex), 
-        contact, 
-        ...this.contacts.slice(this.editIndex + 1)
-      ]
-    this.db.collection('users').doc(this.uid).update({
-      contacts
-    })
+    this.db
+      .collection('users')
+      .doc(this.uid)
+      .collection('contacts')
+      .add(contact)
   }
 
   openNewContactDialog() {
-    this.state = 'new';
     this.contactFormDialog.show({});
-  }
-
-  openEditContactDialog(contact, index) {
-    this.state = 'edit';
-    this.editIndex = index
-    this.contactFormDialog.show(contact);
   }
 
   static styles = css`
@@ -96,7 +82,7 @@ export class CContacts extends LitElement {
           this.contacts && this.contacts.map((contact, idx)=>html`
             <mwc-list-item 
               hasMeta 
-              @click="${()=>this.openEditContactDialog(contact, idx)}"
+              @click="${()=>this.navigate(`/users/${this.uid}/contacts/${contact.cid}`)}"
             >
               <span>${contact.fn}</span>
               <mwc-icon slot="meta">edit</mwc-icon>
@@ -111,8 +97,8 @@ export class CContacts extends LitElement {
       ></mwc-fab>
 
       <c-contact-form
-        @save="${this.saveContacts}"
+        @save="${this.saveContact}"
       ></c-contact-form>
-    `;
+   `;
   }
 }

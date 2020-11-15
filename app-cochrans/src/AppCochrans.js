@@ -12,6 +12,7 @@ import { router, navigator , outlet } from 'lit-element-router';
 
 import './c-contact-form';
 import './c-contacts';
+import './c-contact';
 import './c-contacts-check-list';
 import './c-users';
 
@@ -41,7 +42,6 @@ export class AppCochrans extends router(navigator(LitElement)) {
       contact: { type: String },
       db: { type: Object },
       user: { type: Object },
-      contacts: { type: Array },
       params: { type: Object },
       query: { type: Object },
       route: { type: String, reflect: true, attribute: 'route' },
@@ -61,20 +61,28 @@ export class AppCochrans extends router(navigator(LitElement)) {
         pattern: 'contacts'
       },
       {
+        name: 'contactsCid',
+        pattern: 'contacts/:cid'
+      },
+      {
         name: 'visit',
         pattern: 'visit'
       },
       {
         name: 'checkin',
-        pattern: 'admin/checkin'
+        pattern: 'checkin'
       },
       {
-        name: 'adminUsers',
-        pattern: 'admin/users'
+        name: 'users',
+        pattern: 'users'
       },
       {
-        name: 'adminUsersUid',
-        pattern: 'admin/users/:uid'
+        name: 'usersUid',
+        pattern: 'users/:uid'
+      },
+      {
+        name: 'usersUidContactsCid',
+        pattern: 'users/:uid/contacts/:cid'
       },
       {
         name: 'not-found',
@@ -85,7 +93,6 @@ export class AppCochrans extends router(navigator(LitElement)) {
 
   constructor() {
     super();
-    this.contacts = []
     this.transientContacts = []
     this.user = {};
   }
@@ -272,19 +279,13 @@ END:VCARD`.replace('\n', '\r\n');
       <mwc-button 
         raised
         label="Check Someone else in" 
-        @click="${()=>this.navigate('/admin/checkin')}"
+        @click="${()=>this.navigate('/checkin')}"
       ></mwc-button>
 
       <mwc-button 
         raised
         label="Manage Users" 
-        @click="${()=>this.navigate('/admin/users')}"
-      ></mwc-button>
-
-      <mwc-button 
-        raised
-        label="Write NFC Tag" 
-        @click="${()=>this.navigate('/admin/writetag')}"
+        @click="${()=>this.navigate('/users')}"
       ></mwc-button>
 
       <mwc-icon
@@ -376,19 +377,25 @@ END:VCARD`.replace('\n', '\r\n');
 
         <div route='visit'>${this.viewVisit(this.user.uid)}</div>
 
-        <div route='adminCheckin'>${this.viewCheckin()}</div>
+        <div route='checkin'>${this.viewCheckin()}</div>
 
         <c-users
-          route='adminUsers'
+          route='users'
           .db=${this.db}
         ></c-users>
  
-         <c-contacts
-          route='adminUsersUid'
+        <c-contacts
+          route='usersUid'
           .db=${this.db}
           .uid=${this.params.uid}
         ></c-contacts>
  
+        <c-contact
+          route='usersUidContactsCid'
+          .db=${this.db}
+          .params=${this.params}
+        ></c-contact>
+
         <div route=not-found>
           <h1>404 Page Not Found</h1>
 

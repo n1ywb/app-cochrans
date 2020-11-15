@@ -22,15 +22,19 @@ export class CContactsCheckList extends LitElement {
     if (uid) {
       setTimeout(
         () => {
-          this._uidSnapshot = this.db.collection('users').doc(uid).onSnapshot(doc => {
-            if (doc.exists) {
-              this.contacts = doc.data().contacts;
-            }
-            else {
-              this.db.collection('users').doc(uid).update({
-                contacts: []
-              });
-            }
+          this._uidSnapshot = this.db
+            .collection('users')
+            .doc(uid)
+            .collection('contacts')
+            .onSnapshot(collection => {
+              const contacts = [];
+              collection.forEach(doc=>{
+                contacts.push({
+                  cid: doc.id,
+                  ...doc.data()
+                })
+              })
+              this.contacts = contacts;
           })
         },
         0
@@ -46,19 +50,23 @@ export class CContactsCheckList extends LitElement {
   }
 
   saveContacts(evt) {
-    let contacts;
     const {contact} = evt.detail;
-    if (this.state === 'new')
-      contacts = [...this.contacts, contact]
-    else if (this.state === 'edit')
-      contacts = [
-        ...this.contacts.slice(0,this.editIndex), 
-        contact, 
-        ...this.contacts.slice(this.editIndex + 1)
-      ]
-    this.db.collection('users').doc(this.uid).update({
-      contacts
-    })
+    if (this.state === 'new') {
+      this.db
+        .collection('users')
+        .doc(this.uid)
+        .collection('contacts')
+        .add(contact)
+    }
+    else if (this.state === 'edit') {
+      this.db
+        .collection('users')
+        .doc(this.uid)
+        .collection('contacts')
+        .doc(this.cid)
+        .set(contact)
+
+    }
   }
 
   openNewContactDialog() {
