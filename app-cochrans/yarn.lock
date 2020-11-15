@@ -6059,11 +6059,6 @@ listr@^0.14.2:
     p-map "^2.0.0"
     rxjs "^6.3.3"
 
-lit-element-router@^2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/lit-element-router/-/lit-element-router-2.0.3.tgz#6cd369d205f79421674b8ec87cb00b8a3e66aa6b"
-  integrity sha512-ASaFeB5E4hsd2LYH3keY3ImuaW1+Dc3BcjauTRZhVcYmEIYDkIs/ci7Vfv/SroHhbyQ5nF/nPFBcOFipYsGwXg==
-
 lit-element@^2.0.1, lit-element@^2.2.1, lit-element@^2.3.0, lit-element@^2.3.1:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-2.4.0.tgz#b22607a037a8fc08f5a80736dddf7f3f5d401452"
